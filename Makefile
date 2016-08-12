@@ -20,8 +20,7 @@ Sidewalks: Sidewalks.zip
 data: CensusTracts Sidewalks
 
 chunks: data directories
-	# python chunk.py AddressPt/addresses.shp BlockGroupPly/blockgroups.shp chunks/addresses-%s.shp GEOID
-	# python chunk.py BldgPly/buildings.shp BlockGroupPly/blockgroups.shp chunks/buildings-%s.shp GEOID
+	python chunk.py -s data/census-tracts.geojson -f data/sidewalks/seattle-sidewalks/sidewalks.geojson -o output/chunks/sidewalks/sidewalks-%s.geojson -k geoid
 
 merged: directories
 #	python merge.py
@@ -34,7 +33,9 @@ links: osm
 
 directories:
 	mkdir -p output
-	mkdir -p output/chunks
+	mkdir -p output/chunks/sidewalks
+	mkdir -p output/chunks/crossings
+	mkdir -p output/chunks/curbramps
 	mkdir -p output/merged
 	mkdir -p output/osm
 	mkdir -p output/links

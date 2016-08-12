@@ -18,7 +18,7 @@ speedups.enable()
 ###############################################################################
 
 def chunk(sectionFileName, featureFileName, pattern, key=None):
-	# Load and index
+  # Load and index
   with open(featureFileName, "r") as featureFile:
       featureData = geojson.load(featureFile)
 
@@ -52,27 +52,27 @@ def chunk(sectionFileName, featureFileName, pattern, key=None):
 
           i = 0
           sectionFeatures = []
-          for section in sectionData.features:       
+          for section in sectionData.features:
               fileName = pattern % i
               if key:
                   fileName = pattern % str(section.properties[key])
                   try:
-                  	  with open(fileName, "w") as exportFile:
-                  	  	  sectionShape = asShape(section["geometry"])
-                  	  	  for j in featureIdx.intersection(sectionShape.bounds):
-                  	  	  	# only considered features that haven't been deleted from purged dict
-                  	  	  	if j in featuresPurged:
-                  	  	  	    if asShape(features[j]["geometry"]).intersects(sectionShape):
-                  	  	  	    	  sectionFeatures.append(features[j])
-                  	  	  	    	  del featuresPurged[j]
-                  	  	  #only export non-empty FeatureCollections:
-                  	  	  if len(sectionFeatures) > 0:
-                  	  	  	  sectionGeojson = geojson.FeatureCollection(sectionFeatures)
-		                          sectionGeojson["crs"] = featureCrs
+                      with open(fileName, "w") as exportFile:
+                          sectionShape = asShape(section["geometry"])
+                          for j in featureIdx.intersection(sectionShape.bounds):
+                              # only considered features that haven't been deleted from purged dict
+                              if j in featuresPurged:
+                                  if asShape(features[j]["geometry"]).intersects(sectionShape):
+                                      sectionFeatures.append(features[j])
+                                      del featuresPurged[j]
+                          #only export non-empty FeatureCollections:
+                          if len(sectionFeatures) > 0:
+                              sectionGeojson = geojson.FeatureCollection(sectionFeatures)
+                              sectionGeojson["crs"] = featureCrs
 
-		                          # write geojson to file
-		                          geojson.dump(sectionGeojson, exportFile)
-		                          print "Exported %s" % fileName
+                              # write geojson to file
+                              geojson.dump(sectionGeojson, exportFile)
+                              print ("Exported %s" % fileName)
 
                           i = i + 1
                   except ValueError:
