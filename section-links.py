@@ -4,15 +4,9 @@
 
 
 import sys
-# import os, os.path
-# import json
 import geojson
 import argparse
-#from fiona import collection
-# from rtree import index
-# from shapely.geometry import asShape
-# from shapely import speedups
-from pprint import pprint
+# from pprint import pprint
 
 
 ###############################################################################
@@ -33,7 +27,7 @@ def addLinks(sectionFileName, pattern, key, outputpath):
       try:
       	  with open(outputpath, "w") as outFile:
               geojson.dump(sectionData, outFile)
-              print "Links added in %s" % outputpath
+              print ("Links added in %s" % outputpath)
       except ValueError:
           print ("Error exporting " + fileName)
           print (sectionData)
