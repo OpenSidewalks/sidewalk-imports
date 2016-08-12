@@ -14,7 +14,7 @@ Building Import](https://github.com/osmlab/labuildings).
 
 ## Prerequisites
 
-    Python 2.7.x
+    Python>=3.4
     pip
     virtualenv
     libxml2
@@ -46,7 +46,7 @@ Building Import](https://github.com/osmlab/labuildings).
 
 ## Set up Python virtualenv and get dependencies
     # may need to easy_install pip and pip install virtualenv
-    virtualenv ~/venvs/sidewalks
+    virtualenv -p python3 ~/venvs/sidewalks
     source ~/venvs/sidewalks/bin/activate
     pip install -r requirements.txt
 
