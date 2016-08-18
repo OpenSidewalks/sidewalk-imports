@@ -1,4 +1,4 @@
-all: data directories chunks merged osm links
+all: data directories validate chunks convert merge osm links
 
 clean:
 	rm -rf data
@@ -19,16 +19,32 @@ Sidewalks: Sidewalks.zip
 
 data: CensusTracts Sidewalks
 
-chunks: data directories
-	python chunk.py -s data/census-tracts.geojson -f data/sidewalks/seattle-sidewalks/sidewalks.geojson -o output/chunks/sidewalks/sidewalks-%s.geojson -k geoid
+validate: directories data/sidewalks/seattle-sidewalks/sidewalks.geojson data/sidewalks/seattle-sidewalks/curbramps.geojson data/sidewalks/seattle-sidewalks/crossings.geojson
+	osmizer validate sidewalks data/sidewalks/seattle-sidewalks/sidewalks.geojson
+	osmizer validate curbramps data/sidewalks/seattle-sidewalks/curbramps.geojson
+	osmizer validate crossings data/sidewalks/seattle-sidewalks/crossings.geojson
 
-merged: directories
+
+chunks: data/census-tracts.geojson data/sidewalks/seattle-sidewalks/sidewalks.geojson data/sidewalks/seattle-sidewalks/curbramps.geojson data/sidewalks/seattle-sidewalks/crossings.geojson
+	python chunk.py -s data/census-tracts.geojson -f data/sidewalks/seattle-sidewalks/sidewalks.geojson -o output/chunks/sidewalks/sidewalks-%s.geojson -k geoid
+	python chunk.py -s data/census-tracts.geojson -f data/sidewalks/seattle-sidewalks/curbramps.geojson -o output/chunks/curbramps/curbramps-%s.geojson -k geoid
+	python chunk.py -s data/census-tracts.geojson -f data/sidewalks/seattle-sidewalks/crossings.geojson -o output/chunks/crossings/crossings-%s.geojson -k geoid
+
+osm: output/chunks/sidewalks/sidewalks-*.geojson
+	# sidewalks
+	for f in output/chunks/sidewalks/sidewalks-*.geojson; do \ 
+	fout="${f##*/}"; \
+	fout="${fout%%.*}"; \
+	fout="output/osm/sidewalks/${fout}.osm"; \
+	osmizer convert sidewalks f fout; \
+	done
+	# curbramps
+	# crossings
+
+merge: convert
 #	python merge.py
 
-osm: merged
-#	python convert.py merged/*
-
-links: osm
+links: merge
 	python section-links.py -s data/census-tracts.geojson -p https://taskfiles.opensidewalks.com/task/%s.osm -k geoid -o output/links/census-tracts-links.geojson
 
 directories:
@@ -36,6 +52,8 @@ directories:
 	mkdir -p output/chunks/sidewalks
 	mkdir -p output/chunks/crossings
 	mkdir -p output/chunks/curbramps
+	mkdir -p output/osm/sidewalks
+	mkdir -p output/osm/crossings
+	mkdir -p output/osm/curbramps
 	mkdir -p output/merged
-	mkdir -p output/osm
 	mkdir -p output/links
