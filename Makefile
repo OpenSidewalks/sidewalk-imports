@@ -51,9 +51,9 @@ validate: directories $(SIDEWALK-DATA)/*.geojson
 	osmizer validate crossings $(SIDEWALK-DATA)/crossings.geojson
 
 chunks: $(INPUT)/census-tracts.geojson $(SIDEWALK-DATA)/sidewalks.geojson $(SIDEWALK-DATA)/curbramps.geojson $(SIDEWALK-DATA)/crossings.geojson
-	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/sidewalks.geojson -o $(SIDEWALK-CHUNKS)/sidewalks-%s.geojson -k geoid
-	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/curbramps.geojson -o $(CURBRAMP-CHUNKS)/curbramps-%s.geojson -k geoid
-	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/crossings.geojson -o $(CROSSING-CHUNKS)/crossings-%s.geojson -k geoid
+	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/sidewalks.geojson -o $(CHUNKS)/%s/sidewalks.geojson -k geoid
+	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/curbramps.geojson -o $(CHUNKS)/%s/curbramps.geojson -k geoid
+	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/crossings.geojson -o $(CHUNKS)/%s/crossings.geojson -k geoid
 
 # convert to osm files using osmizer
 osm: $(SIDEWALK-CHUNKS)/sidewalks-*.geojson $(CURBRAMP-CHUNKS)/curbramps-*.geojson) $(CROSSING-CHUNKS)/crossings-*.geojson)
@@ -66,7 +66,7 @@ merge: $(INPUT)/census-tracts.txt
 	bash merge-census-tracts.sh $(INPUT)/census-tracts.txt t
 
 links: 
-	python section-links.py -s $(INPUT)/census-tracts.geojson -p https://taskfiles.opensidewalks.com/task/%s.osm -k geoid -o $(LINKS)/census-tracts-links.geojson
+	python section-links.py -s $(INPUT)/census-tracts.geojson -p https://import.opensidewalks.com/seattle_import/merged-%s.osm -k geoid -o $(LINKS)/census-tracts-links.geojson
 
 directories:
 	mkdir -p $(OUTPUT)
