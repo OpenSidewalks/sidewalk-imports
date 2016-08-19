@@ -1,16 +1,18 @@
 # directory vars
 INPUT=data
 OUTPUT=output
+CHUNKS=$(OUTPUT)/chunks
+OSM=$(OUTPUT)/osm
 
 SIDEWALK-DATA=$(INPUT)/sidewalks/seattle-sidewalks
 
-SIDEWALK-CHUNKS=$(OUTPUT)/chunks/sidewalks
-CURBRAMP-CHUNKS=$(OUTPUT)/chunks/curbramps
-CROSSING-CHUNKS=$(OUTPUT)/chunks/crossings
+# SIDEWALK-CHUNKS=$(OUTPUT)/chunks/sidewalks
+# CURBRAMP-CHUNKS=$(OUTPUT)/chunks/curbramps
+# CROSSING-CHUNKS=$(OUTPUT)/chunks/crossings
 
-SIDEWALK-OSM=$(OUTPUT)/osm/sidewalks
-CURBRAMP-OSM=$(OUTPUT)/osm/curbramps
-CROSSING-OSM=$(OUTPUT)/osm/crossings
+# SIDEWALK-OSM=$(OUTPUT)/osm/sidewalks
+# CURBRAMP-OSM=$(OUTPUT)/osm/curbramps
+# CROSSING-OSM=$(OUTPUT)/osm/crossings
 
 MERGED=$(OUTPUT)/merged
 LINKS=$(OUTPUT)/links
@@ -54,25 +56,27 @@ chunks: $(INPUT)/census-tracts.geojson $(SIDEWALK-DATA)/sidewalks.geojson $(SIDE
 	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/crossings.geojson -o $(CROSSING-CHUNKS)/crossings-%s.geojson -k geoid
 
 # convert to osm files using osmizer
-osm: $(SIDEWALK-CHUNKS)/sidewalks-*.geojson
+osm: $(SIDEWALK-CHUNKS)/sidewalks-*.geojson $(CURBRAMP-CHUNKS)/curbramps-*.geojson) $(CROSSING-CHUNKS)/crossings-*.geojson)
 	$(foreach f, $(wildcard $(SIDEWALK-CHUNKS)/sidewalks-*.geojson), $(CONVERT-SIDEWALKS))
 	$(foreach f, $(wildcard $(CURBRAMP-CHUNKS)/curbramps-*.geojson), $(CONVERT-CURBRAMPS))
 	$(foreach f, $(wildcard $(CROSSING-CHUNKS)/crossings-*.geojson), $(CONVERT-CROSSINGS))
 
 # merge sidewalks, curbramps, and crossings using osmizer
-merge: convert
-#	python merge.py
+merge: $(INPUT)/census-tracts.txt
+	bash merge-census-tracts.sh $(INPUT)/census-tracts.txt t
 
 links: 
 	python section-links.py -s $(INPUT)/census-tracts.geojson -p https://taskfiles.opensidewalks.com/task/%s.osm -k geoid -o $(LINKS)/census-tracts-links.geojson
 
 directories:
 	mkdir -p $(OUTPUT)
-	mkdir -p $(SIDEWALK-CHUNKS)
-	mkdir -p $(CURBRAMP-CHUNKS)
-	mkdir -p $(CROSSING-CHUNKS)
-	mkdir -p $(SIDEWALK-OSM)
-	mkdir -p $(CURBRAMP-OSM)
-	mkdir -p $(CROSSING-OSM)
+	mkdir -p $(CHUNKS)
+	mkdir -p $(OSM)
+	# mkdir -p $(SIDEWALK-CHUNKS)
+	# mkdir -p $(CURBRAMP-CHUNKS)
+	# mkdir -p $(CROSSING-CHUNKS)
+	# mkdir -p $(SIDEWALK-OSM)
+	# mkdir -p $(CURBRAMP-OSM)
+	# mkdir -p $(CROSSING-OSM)
 	mkdir -p $(MERGED)
 	mkdir -p $(LINKS)

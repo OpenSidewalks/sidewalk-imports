@@ -4,7 +4,7 @@
 
 
 import sys
-# import os, os.path
+import os, os.path
 import geojson
 import argparse
 from rtree import index
@@ -16,6 +16,10 @@ speedups.enable()
 
 
 ###############################################################################
+def ensure_path_exists(filepath):
+  directory = os.path.dirname(filepath)
+  if not os.path.exists(directory):
+    os.makedirs(directory)
 
 def chunk(sectionFileName, featureFileName, pattern, key=None):
   # Load and index
@@ -57,6 +61,7 @@ def chunk(sectionFileName, featureFileName, pattern, key=None):
               if key:
                   fileName = pattern % str(section.properties[key])
                   try:
+                      ensure_path_exists(fileName)
                       with open(fileName, "w") as exportFile:
                           sectionShape = asShape(section["geometry"])
                           for j in featureIdx.intersection(sectionShape.bounds):
