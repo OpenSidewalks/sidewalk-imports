@@ -48,7 +48,6 @@ validate: directories $(SIDEWALK-DATA)/*.geojson
 	osmizer validate curbramps $(SIDEWALK-DATA)/curbramps.geojson
 	osmizer validate crossings $(SIDEWALK-DATA)/crossings.geojson
 
-
 chunks: $(INPUT)/census-tracts.geojson $(SIDEWALK-DATA)/sidewalks.geojson $(SIDEWALK-DATA)/curbramps.geojson $(SIDEWALK-DATA)/crossings.geojson
 	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/sidewalks.geojson -o $(SIDEWALK-CHUNKS)/sidewalks-%s.geojson -k geoid
 	python chunk.py -s $(INPUT)/census-tracts.geojson -f $(SIDEWALK-DATA)/curbramps.geojson -o $(CURBRAMP-CHUNKS)/curbramps-%s.geojson -k geoid
@@ -64,7 +63,7 @@ osm: $(SIDEWALK-CHUNKS)/sidewalks-*.geojson
 merge: convert
 #	python merge.py
 
-links: merge
+links: 
 	python section-links.py -s $(INPUT)/census-tracts.geojson -p https://taskfiles.opensidewalks.com/task/%s.osm -k geoid -o $(LINKS)/census-tracts-links.geojson
 
 directories:
