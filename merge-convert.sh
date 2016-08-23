@@ -1,12 +1,12 @@
 # expected arguments
 nargs=2
 if [ "$#" -ne "$nargs" ]; then
-  echo "Usage: merge-convert.sh <CHUNK-DIR> <OUTPUT-DIR>"
+  echo "Usage: merge-convert.sh <CHUNK-DIR/> <OUTPUT-DIR/>"
   exit 0
 fi
 
 CHUNKS=$1
-CONVERTED=$2
+OUTPUT=$2
 
 
 # filenames for sidewalks, curbramps, crossings
@@ -38,35 +38,70 @@ for d in "$CHUNKS"*/; do
 	# if sidewalks
 	if [ -f "$sidewalks_in" ]; then
 		echo "osmizer convert sidewalks $sidewalks_in $sidewalks_out"
-		osmizer convert sidewalks "$sidewalks_in" "$sidewalks_out"
+		#osmizer convert sidewalks "$sidewalks_in" "$sidewalks_out"
+		# if sidewalks & curbramps
 		if [ -f "$curbramps_in" ]; then		
-			osmizer convert curbramps "$curbramps_in" "$curbramps_out"
-			osmizer merge "$sidewalks_out" "$curbramps_out" "$temp_merge"
+			echo "osmizer convert curbramps $curbramps_in $curbramps_out"
+			echo "osmizer merge $sidewalks_out $curbramps_out $temp_merge"
+			# osmizer convert curbramps "$curbramps_in" "$curbramps_out"
+			# osmizer merge "$sidewalks_out" "$curbramps_out" "$temp_merge"
+
+			# if sidewalks, curbramps, and crossings
 			if [ -f "$crossings_in" ]; then
-				osmizer convert crossings "$crossings_in" "$crossings_out"
-				osmizer merge "$temp_merge" "$crossings_out" "$outpath"
-				echo "sidewalks, curbramps, and crossings"
+				echo "osmizer convert crossings $crossings_in $crossings_out"
+				echo "osmizer merge $temp_merge $crossings_out $outpath"
+				# osmizer convert crossings "$crossings_in" "$crossings_out"
+				# osmizer merge "$temp_merge" "$crossings_out" "$outpath"
+				echo "rm $temp_merge"
+				# rm "$temp_merge"
+				echo "CASE 1 - sidewalks, curbramps, and crossings"
+			
+			# if sidewalks & curbramps only
 			else
-				echo "sidewalks and curbramps only"
-				mv "$temp_merge" "$outpath"
+				echo "mv $temp_merge $outpath"
+				# mv "$temp_merge" "$outpath"
+				echo "CASE 2 - sidewalks and curbramps only"
 			fi
+		
+		# if sidewalks & crossings only
 		elif [ -f "$crossings_in" ]; then
-			echo "sidewalks and crossings only"
+			echo "osmizer convert crossings $crossings_in $crossings_out"
+			echo "osmizer merge $sidewalks_out $crossings_out $outpath"
+			# osmizer convert crossings "$crossings_in" "$crossings_out"
+			# osmizer merge "$sidewalks_out" "$crossings_out" "$outpath"
+			echo "CASE 3 - sidewalks and crossings only"
+		
+		# if sidewalks only
 		else
-			echo "sidewalks only"
-			mv "$sidewalks_out" "$outpath"
+			echo "mv $sidewalks_out $outpath"
+			# mv "$sidewalks_out" "$outpath"
+			echo "CASE 4 - sidewalks only"
 		fi
+	
+	# if curbramps (and NOT sidewalks)
 	elif [ -f "$curbramps_in" ]; then	
+		echo "osmizer convert curbramps $curbramps_in $curbramps_out"
+		# osmizer convert curbramps "$curbramps_in" "$curbramps_out"
+
+		# if curbramps and crossings only
 		if [ -f "$crossings_in" ]; then
-			echo "curbramps and crossings only"
+			echo "osmizer convert crossings $crossings_in $crossings_out"
+			echo "osmizer merge $curbramps_out $crossings_out $outpath"
+			# osmizer convert crossings "$crossings_in" "$crossings_out"
+			# osmizer merge "$curbramps_out" "$crossings_out" "$outpath"
+			echo "CASE 5 - curbramps and crossings only"
+		
+		# if curbramps only
 		else
-			echo "curbramps only"
-			mv "$curbramps_out" "$outpath"
+			echo "mv $curbramps_out $outpath"
+			# mv "$curbramps_out" "$outpath"
+			echo "CASE 6 - curbramps only"
 		fi
-	elif [ -f "$crossings_in" ]; then	
-		echo "crossings only"
-		mv $crossings_out $outpath
+	
+	# if crossings only
+	elif [ -f "$crossings_in" ]; then
+		echo "osmizer convert crossings $crossings_in $outpath"
+		# osmizer convert crossings "$crossings_in" "$outpath"
+		echo "CASE 7 - crossings only"
 	fi
-	# so that it doesn't run too long before it's ready
-	break
 done

@@ -2,7 +2,7 @@
 INPUT=data
 OUTPUT=output
 CHUNKS=$(OUTPUT)/chunks
-OSM=$(OUTPUT)/osm
+# OSM=$(OUTPUT)/osm
 
 SIDEWALK-DATA=$(INPUT)/sidewalks/seattle-sidewalks
 
@@ -60,6 +60,6 @@ links:
 directories:
 	mkdir -p $(OUTPUT)
 	mkdir -p $(CHUNKS)
-	mkdir -p $(OSM)
+	# mkdir -p $(OSM)
 	mkdir -p $(MERGED)
 	mkdir -p $(LINKS)
