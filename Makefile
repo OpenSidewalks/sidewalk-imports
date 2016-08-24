@@ -52,7 +52,7 @@ chunks: $(INPUT)/census-tracts.geojson $(SIDEWALK-DATA)/sidewalks.geojson $(SIDE
 
 # convert to osm files and merge all features using osmizer
 merged:
-	$(foreach dir, $(wildcard $(CHUNKS)/*), $(CONVERT-MERGE))
+	bash $(CHUNKS) $(MERGED)
 
 links: 
 	python section-links.py -s $(INPUT)/census-tracts.geojson -p https://import.opensidewalks.com/seattle_import/merged-%s.osm -k geoid -o $(LINKS)/census-tracts-links.geojson
