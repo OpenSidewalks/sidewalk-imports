@@ -9,6 +9,9 @@ validated and convert geojson files to osm files that conform to this
 Our [import proposal](http://wiki.openstreetmap.org/wiki/Seattle,_Washington/Sidewalk_Import) 
 includes more details about our import plan and discussions with the OSM community.
 
+### About this project
+Learn more about OpenSidewalks [here](http://www.opensidewalks.com).
+
 This repository and our import workflow are heavily based on the [LA 
 Building Import](https://github.com/osmlab/labuildings).
 
@@ -49,5 +52,45 @@ Building Import](https://github.com/osmlab/labuildings).
     virtualenv -p python3 ~/venvs/sidewalks
     source ~/venvs/sidewalks/bin/activate
     pip install -r requirements.txt
+    
+   
+## Usage
+
+Run all stages:
+
+    # Download data & run all data prep steps
+    make all
+
+Or run stages separately, like so:
+
+    # Download and expand all data files
+    make data
+    
+    # Create output directories
+    make directories
+    
+    # Validate appropriate data for sidewalk geometry
+    # Uses osmizer python module
+    make validate
+
+    # Chunk sidewalk, curbramp, and crossing files 
+    # Chunked by census tract currently
+    # (this will take a relatively long time)
+    make chunks
+
+    # Generate merged, importable .osm files.
+    # Uses osmizer python module
+    # This will populate the merged/ directory with one .osm file per
+    # census tract group.
+    # (this will probably take quite a long time)
+    make merged
+
+    # Clean all input and output data files:
+    make clean
+
+    # Create geojson file with data file links
+    # For OSM Tasking Manager
+    make links
+
 
 

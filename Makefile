@@ -6,7 +6,7 @@ SIDEWALK-DATA=$(INPUT)/sidewalks/seattle-sidewalks/
 MERGED=$(OUTPUT)/merged/
 LINKS=$(OUTPUT)/links/
 
-# run all data prep steps
+# download data & run all data prep steps
 all: data directories validate chunks merged links
 
 clean:
