@@ -1,24 +1,13 @@
 # directory vars
 INPUT=data
 OUTPUT=output
-CHUNKS=$(OUTPUT)/chunks
-# OSM=$(OUTPUT)/osm
+CHUNKS=$(OUTPUT)/chunks/
+SIDEWALK-DATA=$(INPUT)/sidewalks/seattle-sidewalks/
+MERGED=$(OUTPUT)/merged/
+LINKS=$(OUTPUT)/links/
 
-SIDEWALK-DATA=$(INPUT)/sidewalks/seattle-sidewalks
-
-
-MERGED=$(OUTPUT)/merged
-LINKS=$(OUTPUT)/links
-
-# functions (expand file and directory vars from foreach function and run osmizer from shell)
-CONVERT-MERGE=echo $(wildcard $(dir))
-
-CONVERT-SIDEWALKS=$(shell osmizer convert sidewalks $(wildcard $(f)) $(SIDEWALK-OSM)/`basename $(wildcard $(f)) .geojson`.osm)
-CONVERT-CURBRAMPS=$(shell osmizer convert curbramps $(wildcard $(f)) $(CURBRAMP-OSM)/`basename $(wildcard $(f)) .geojson`.osm)
-CONVERT-CROSSINGS=$(shell osmizer convert crossings $(wildcard $(f)) $(CROSSING-OSM)/`basename $(wildcard $(f)) .geojson`.osm)
-
-
-all: data directories validate chunks
+# run all data prep steps
+all: data directories validate chunks merged links
 
 clean:
 	rm -rf $(INPUT)
@@ -52,7 +41,7 @@ chunks: $(INPUT)/census-tracts.geojson $(SIDEWALK-DATA)/sidewalks.geojson $(SIDE
 
 # convert to osm files and merge all features using osmizer
 merged:
-	bash $(CHUNKS) $(MERGED)
+	bash merge-convert.sh $(CHUNKS) $(MERGED)
 
 links: 
 	python section-links.py -s $(INPUT)/census-tracts.geojson -p https://import.opensidewalks.com/seattle_import/merged-%s.osm -k geoid -o $(LINKS)/census-tracts-links.geojson
@@ -60,6 +49,5 @@ links:
 directories:
 	mkdir -p $(OUTPUT)
 	mkdir -p $(CHUNKS)
-	# mkdir -p $(OSM)
 	mkdir -p $(MERGED)
 	mkdir -p $(LINKS)
